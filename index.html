@@ -723,21 +723,37 @@ const urlParams = new URLSearchParams(window.location.search);
 const shareId = urlParams.get('share');
 
 if(shareId) {
-    document.getElementById('lock').classList.add('hide');
-    const pass = prompt("This link is password protected. Enter password (or leave empty if none):");
-    fetch(GW+'/share/'+shareId+'?password='+encodeURIComponent(pass||''))
-    .then(r=>r.json())
-    .then(d=>{
-        if(!d.ok) { alert(d.error || 'Invalid Link'); return; }
-        document.querySelector('header').style.display = 'none';
-        document.querySelector('footer').style.display = 'none';
+    document.getElementById('lock').classList.add('hide'); // Hide main lock
+    
+    // Step 1: Check karein ke password chahiye ya nahi
+    fetch(GW+'/share/'+shareId)
+    .then(r => {
+        if (r.status === 401) {
+            // Step 2: Agar password chahiye toh maangein
+            const pass = prompt("This link is password protected. Enter password:");
+            if (pass === null) return null; // Cancel kar diya
+            return fetch(GW+'/share/'+shareId+'?password='+encodeURIComponent(pass));
+        }
+        return r;
+    })
+    .then(r => {
+        if (!r) return null;
+        return r.json();
+    })
+    .then(d => {
+        if (!d) return; // User ne prompt cancel kiya
+        if(!d.ok) { alert(d.error || 'Invalid Link or Password'); return; }
+        
+        document.querySelector('header').style.display = 'none'; // hide categories
+        document.querySelector('footer').style.display = 'none'; // hide add button
         
         let sharedItems = [];
         d.files.forEach(f => {
+            const fullPath = f.startsWith('MuhammadShah/') ? f : 'MuhammadShah/' + f;
             sharedItems.push({ 
                 name: f.split('/').pop(), 
-                url: RAW + f.split('/').map(enc).join('/'), 
-                fallback: RAW + f.split('/').map(enc).join('/'), 
+                url: RAW + fullPath.split('/').map(enc).join('/'), 
+                fallback: RAW + fullPath.split('/').map(enc).join('/'), 
                 path: f 
             });
         });
