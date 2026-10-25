@@ -45,7 +45,7 @@ main{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;justi
   transform:scale(.88);opacity:.62;transition:transform .55s cubic-bezier(.2,.9,.25,1.1),opacity .4s,box-shadow .4s;
   animation:rise .9s cubic-bezier(.2,.9,.25,1) both;animation-delay:calc(var(--i)*90ms);background:var(--glass)}
 .card.on{transform:scale(1);opacity:1}
-.card img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+.card img, .card video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
 .card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
   box-shadow:inset 0 1.5px 0 rgba(255,255,255,.55),inset 0 0 0 1px rgba(255,255,255,.18);
   background:linear-gradient(155deg,rgba(255,255,255,.22),transparent 38%)}
@@ -134,8 +134,8 @@ footer{gap:12px;align-items:center}
 .plus:active{transform:scale(.88)}.plus.open svg{transform:rotate(135deg)}
 .plus.spin svg{animation:spin 1s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
 .upl .prog .f{transition:stroke-dashoffset .3s linear}
-#menu,#dlg{align-items:flex-end;background:rgba(5,6,18,.38);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
-#dlg{align-items:center}
+#menu,#dlg,#confirmPop{align-items:flex-end;background:rgba(5,6,18,.38);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px))}
+#dlg,#confirmPop{align-items:center}
 .sheet.sm{width:min(420px,100%);padding:12px;border-radius:34px;text-align:left}
 .sheet.sm h3{margin:8px 8px 12px;font-size:20px}
 .mi{display:flex;align-items:center;gap:14px;width:100%;padding:14px;border:0;border-radius:24px;background:none;color:var(--text);font-weight:600;font-size:17px;font-family:inherit;cursor:pointer;transition:background .2s,transform .2s}
@@ -148,9 +148,20 @@ footer{gap:12px;align-items:center}
 .btns button{flex:1;height:50px;border:0;border-radius:99px;font-weight:600;font-size:17px;font-family:inherit;cursor:pointer;color:var(--text);background:var(--glass);box-shadow:inset 0 1px 0 var(--hi);transition:transform .2s}
 .btns button:active{transform:scale(.95)}
 .btns .go{background:linear-gradient(180deg,#3d9bff,var(--blue));color:#fff}
+.btns .del{background:linear-gradient(180deg,#ff375f,var(--o2));color:#fff}
 .shake{animation:shk .45s}@keyframes shk{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
- #lock{position:fixed;inset:0;z-index:100;background:var(--bg1);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;transition:opacity .4s}
+
+/* Selection & Action Bar */
+.card.selected { transform: scale(.95); border: 3px solid var(--blue); box-shadow: 0 0 20px var(--blue); opacity: 1; }
+#action-bar { position: fixed; bottom: -100px; left: 0; right: 0; background: var(--glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); display: flex; justify-content: space-around; padding: 16px; border-top: 1px solid var(--glass-b); transition: bottom 0.3s cubic-bezier(0.2, 1, 0.4, 1); z-index: 50; }
+#action-bar.show { bottom: 0; }
+.act-btn { background: none; border: none; color: var(--text); font-family: inherit; font-size: 13px; display: flex; flex-direction: column; align-items: center; gap: 6px; font-weight: 600; }
+.act-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
+.act-btn.danger { color: var(--o2); }
+.share-in { width: 100%; height: 50px; border-radius: 14px; border: 1px solid var(--glass-b); background: rgba(255,255,255,0.1); color: var(--text); padding: 0 16px; font-family: inherit; font-size: 16px; margin-bottom: 12px; outline: none; }
+
+#lock{position:fixed;inset:0;z-index:100;background:var(--bg1);display:flex;align-items:center;justify-content:center;flex-direction:column;padding:24px;transition:opacity .4s}
 #lock.hide{opacity:0;pointer-events:none}
 .lock-box{width:100%;max-width:340px;text-align:center;padding:34px 24px;border-radius:34px}
 .lock-box h2{margin:0 0 20px;font-size:24px;font-weight:700}
@@ -209,6 +220,34 @@ footer{gap:12px;align-items:center}
   <button class="plus glass tap" id="plus" aria-label="Create or upload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
 </footer>
 
+<!-- Multi Selection Action Bar -->
+<div id="action-bar">
+  <button class="act-btn danger" onclick="deleteSelected()"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>Delete</button>
+  <button class="act-btn" onclick="shareSelected()"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>Share</button>
+  <button class="act-btn" onclick="cancelSelection()"><svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"></path></svg>Cancel</button>
+</div>
+
+<!-- Custom Delete Confirm Popup -->
+<div class="layer" id="confirmPop" role="dialog" aria-modal="true">
+  <div class="sheet glass">
+    <h2 style="margin-top:0;" id="confirmTitle">Delete</h2>
+    <p style="font-size:14px; margin-bottom:16px;" id="confirmMsg">Are you sure?</p>
+    <button class="ok tap" id="confirmYes" style="background:linear-gradient(180deg,#ff375f,var(--o2)); box-shadow:inset 0 1.5px 0 rgba(255,255,255,.5), 0 10px 26px rgba(255,55,95,.5); margin-bottom:10px;">Delete</button>
+    <button class="ok tap" style="background:var(--glass); color:var(--text);" onclick="document.getElementById('confirmPop').classList.remove('show')">Cancel</button>
+  </div>
+</div>
+
+<!-- Share Popup -->
+<div class="layer" id="sharePop" role="dialog" aria-modal="true">
+  <div class="sheet glass">
+    <h2 style="margin-top:0;">Share Link</h2>
+    <p style="font-size:14px; margin-bottom:16px;">Set a custom password for this link or leave it empty for none.</p>
+    <input class="share-in" id="sharePassIn" placeholder="Password (Optional)" autocomplete="off">
+    <button class="ok tap" id="shareBtn" style="margin-bottom:10px;">Generate Link</button>
+    <button class="ok tap" style="background:var(--glass); color:var(--text);" onclick="document.getElementById('sharePop').classList.remove('show')">Cancel</button>
+  </div>
+</div>
+
 <div class="layer" id="send" role="status" aria-live="polite">
   <div class="stage" id="stage">
     <span class="ring"></span><span class="ring"></span><span class="ring"></span>
@@ -238,20 +277,22 @@ footer{gap:12px;align-items:center}
   <input class="in" id="dIn" autocomplete="off" autocapitalize="off" spellcheck="false">
   <div class="btns"><button class="tap" id="dNo">Cancel</button><button class="tap go" id="dOk">Create</button></div>
 </div></div>
-<input type="file" id="file" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+<input type="file" id="file" accept="image/*,video/*" multiple hidden>
 
 <div class="toast glass" id="toast" role="alert"></div>
 
 <script>
 const OWNER='itsmems97',REPO='Personal-Data',DIR='MuhammadShah',BRANCH='main';
 const GW='https://pikamovie-api.duckdns.org/gallery';
-const TREE='https://api.github.com/repos/'+OWNER+'/'+REPO+'/git/trees/'+BRANCH+'?recursive=1';
-const RAW='https://raw.githubusercontent.com/'+OWNER+'/'+REPO+'/'+BRANCH+'/';
-const CDN='https://cdn.jsdelivr.net/gh/'+OWNER+'/'+REPO+'@'+BRANCH+'/';
-const IMG=/\.(jpe?g|png|webp|gif|avif)$/i;
+const TREE='https://pikamovie-api.duckdns.org/gallery/list?';
+const RAW='https://pikamovie-api.duckdns.org/gallery/storage/';
+const CDN='https://pikamovie-api.duckdns.org/gallery/storage/';
+const IMG=/\.(jpe?g|png|webp|gif|avif|heic|heif|mp4|mov|webm|m4v)$/i;
 const $=id=>document.getElementById(id);
 const rail=$('rail'),dots=$('dots'),msg=$('msg'),add=$('add'),plus=$('plus'),menu=$('menu');
-let data={root:[],cats:{}},cat='',fol='',items=[],active=0,busy=false,io=null,cfg={needCode:false};
+let data={root:[],cats:{}},cat='Main',fol='',items=[],active=0,busy=false,io=null,cfg={needCode:false};
+let selectedPaths = new Set();
+let isSelectMode = false;
 const blobs=new Map(),wait=ms=>new Promise(r=>setTimeout(r,ms)),enc=encodeURIComponent,nice=n=>n.replace(/-/g,' ');
 
 document.addEventListener('pointerdown',e=>{const t=e.target.closest('.tap');if(!t)return;
@@ -265,14 +306,20 @@ function parse(tree){
   const d={root:[],cats:{}};
   tree.forEach(n=>{
     if(n.type!=='blob'||n.path.indexOf(DIR+'/')!==0)return;
-    const parts=n.path.slice(DIR.length+1).split('/'),file=parts[parts.length-1];
-    const path=n.path.split('/').map(enc).join('/');
-const it=IMG.test(file)?{name:file,url:CDN+path,fallback:RAW+path}:null;
-    if(parts.length===1){if(it)d.root.push(it);return}
+    const relPath = n.path.slice(DIR.length+1);
+    const parts=relPath.split('/'),file=parts[parts.length-1];
+    
+    const isImg = IMG.test(file);
+    if(!isImg && file !== '.gitkeep') return;
+
+    const fullUrlPath=n.path.split('/').map(enc).join('/');
+    const it = isImg ? {name:file,url:CDN+fullUrlPath,fallback:RAW+fullUrlPath, path: relPath} : null;
+
+    if(parts.length===1){ if(it) d.root.push(it); return }
     const c=d.cats[parts[0]]||(d.cats[parts[0]]={files:[],folders:{}});
-    if(parts.length===2){if(it)c.files.push(it);return}
+    if(parts.length===2){ if(it) c.files.push(it); return }
     const f=c.folders[parts[1]]||(c.folders[parts[1]]=[]);
-    if(it)f.push(it);
+    if(it) f.push(it);
   });
   return d;
 }
@@ -281,13 +328,48 @@ function pick(){
   if(!cat)l=data.root;else if(c){l=!fol?c.files.concat(...Object.values(c.folders)):(c.folders[fol]||[])}
   items=l.slice().sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}));
 }
-function chip(label,on,fn){const b=document.createElement('button');b.className='chip tap'+(on?' on':'');b.textContent=label;b.onclick=fn;return b}
+
+// Custom Confirm Logic
+let confirmCallback = null;
+function showConfirm(title, msg, cb) {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmMsg').textContent = msg;
+    document.getElementById('confirmPop').classList.add('show');
+    confirmCallback = cb;
+}
+document.getElementById('confirmYes').onclick = () => {
+    document.getElementById('confirmPop').classList.remove('show');
+    if(confirmCallback) confirmCallback();
+};
+
+function chip(label,on,fn,delPath){
+  const b=document.createElement('button');b.className='chip tap'+(on?' on':'');b.textContent=label;
+  let pressTimer;
+  if(delPath){
+    b.onmousedown = b.ontouchstart = (e) => {
+      pressTimer = setTimeout(() => {
+        showConfirm('Delete', 'Are you sure you want to delete ' + label + '?', () => {
+            deleteSinglePath(delPath);
+        });
+      }, 800);
+    };
+    b.onmouseup = b.ontouchend = b.onmouseleave = b.ontouchmove = () => clearTimeout(pressTimer);
+  }
+  b.onclick=fn;return b;
+}
 function drawChips(){
   const cs=$('cats'),fs=$('fols');cs.innerHTML='';fs.innerHTML='';
-  cs.appendChild(chip('Main',cat==='',()=>go('','')));
-  Object.keys(data.cats).sort().forEach(n=>cs.appendChild(chip(nice(n),cat===n,()=>go(n,''))));
-  if(cat&&data.cats[cat]){fs.hidden=false;fs.appendChild(chip('All',fol==='',()=>go(cat,'')));
-    Object.keys(data.cats[cat].folders).sort().forEach(n=>fs.appendChild(chip(nice(n),fol===n,()=>go(cat,n))))}
+  cs.appendChild(chip('Main',cat===''||cat==='Main',()=>go('Main',''), null));
+  Object.keys(data.cats).sort().forEach(n=>{
+    if(n!=='Main') cs.appendChild(chip(nice(n),cat===n,()=>go(n,''), n));
+  });
+  if(cat&&data.cats[cat]){
+    fs.hidden=false;
+    fs.appendChild(chip('All',fol==='',()=>go(cat,''), null));
+    Object.keys(data.cats[cat].folders).sort().forEach(n=>{
+      fs.appendChild(chip(nice(n),fol===n,()=>go(cat,n), cat+'/'+n));
+    });
+  }
   else fs.hidden=true;
 }
 function go(c,f){cat=c;fol=f;pick();drawChips();render()}
@@ -298,12 +380,64 @@ function render(){
   msg.textContent='';
   items.forEach((it,i)=>{
     const c=document.createElement('div');c.className='card glass'+(i===0?' on':'');c.style.setProperty('--i',i);
-    const im=new Image();im.alt='';im.loading='lazy';im.decoding='async';im.src=it.url;im.draggable=false;
-im.onerror=()=>{
-  if(!im.dataset.r){im.dataset.r=1;im.src=it.fallback;return}
-  if(!im.dataset.f){im.dataset.f=1;setTimeout(()=>{im.src=it.fallback+'?r='+Date.now()},2500)}
-};
-    c.appendChild(im);c.onclick=()=>c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+    
+    let mediaEl;
+    if(/\.(mp4|mov|webm|m4v)$/i.test(it.name)){
+        mediaEl = document.createElement('video');
+        mediaEl.src = it.url; mediaEl.muted = true; mediaEl.playsInline = true;
+        mediaEl.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;';
+    } else {
+        mediaEl = new Image();
+        mediaEl.src = it.url;
+        mediaEl.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;';
+        mediaEl.onerror = () => {
+            if(!mediaEl.dataset.r){mediaEl.dataset.r=1;mediaEl.src=it.fallback;return}
+            if(!mediaEl.dataset.f){mediaEl.dataset.f=1;setTimeout(()=>{mediaEl.src=it.fallback+'?r='+Date.now()},2500)}
+        };
+    }
+    
+    c.appendChild(mediaEl);
+
+    // Long press selection logic FIXED
+    let pressTimer;
+    let isLongPress = false;
+    
+    c.onmousedown = c.ontouchstart = (e) => {
+        isLongPress = false;
+        pressTimer = setTimeout(() => {
+            isLongPress = true;
+            isSelectMode = true;
+            c.classList.add('selected');
+            selectedPaths.add(it.path);
+            document.getElementById('action-bar').classList.add('show');
+            if(navigator.vibrate) navigator.vibrate(50); // Haptic feedback
+        }, 600); // 0.6 seconds long press
+    };
+    
+    c.onmouseup = c.ontouchend = c.onmouseleave = c.ontouchmove = () => {
+        clearTimeout(pressTimer);
+    };
+    
+    c.onclick = (e) => {
+        if (isLongPress) {
+            e.preventDefault();
+            e.stopPropagation();
+            return; // Ignore click after long press
+        }
+        if (isSelectMode) {
+            if (selectedPaths.has(it.path)) {
+                selectedPaths.delete(it.path);
+                c.classList.remove('selected');
+            } else {
+                selectedPaths.add(it.path);
+                c.classList.add('selected');
+            }
+            if (selectedPaths.size === 0) cancelSelection();
+        } else {
+            c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+        }
+    };
+
     rail.appendChild(c);
     const d=document.createElement('i');d.onclick=()=>c.click();dots.appendChild(d);
   });
@@ -312,7 +446,6 @@ im.onerror=()=>{
     io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)setActive([...rail.children].indexOf(e.target))}),{root:rail,threshold:.6});
     [...rail.children].forEach(c=>io.observe(c));
   }else{
-    // Fallback: scroll event se active card detect karo
     rail.onscroll=()=>{
       const cw=rail.children[0]?.getBoundingClientRect().width||1;
       const idx=Math.round(rail.scrollLeft/cw);
@@ -331,7 +464,8 @@ async function load(first){
   try{
     const r=await fetch(TREE+'&t='+Date.now());if(!r.ok)throw 0;
     data=parse((await r.json()).tree||[]);
-    if(cat&&!data.cats[cat]){cat='';fol=''}
+    if(!cat) cat='Main';
+    if(cat&&!data.cats[cat]){cat='Main';fol=''}
     if(fol&&!data.cats[cat].folders[fol])fol='';
     go(cat,fol);
   }catch(e){rail.innerHTML='';dots.hidden=true;msg.innerHTML='Couldn’t load the pictures.<br>Check your connection and refresh.'}
@@ -339,20 +473,10 @@ async function load(first){
 function fetchBlob(u){const p=fetch(u).then(r=>{if(!r.ok)throw new Error(r.status);return r.blob()});p.catch(()=>blobs.delete(u));return p}
 function save(blob,name){
   const u=URL.createObjectURL(blob),a=document.createElement('a');
-  a.href=u;
-  a.download=name;
-  a.rel='noopener';
-  a.target='_blank';
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
+  a.href=u; a.download=name; a.rel='noopener'; a.target='_blank';
+  document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(u),15000);
-  // Safari fallback: agar download attribute fail ho jaye to naye tab mein khol do
-  setTimeout(()=>{
-    if(!document.hidden){ // agar page abhi bhi visible hai (matlab download start nahi hua)
-      window.open(u,'_blank');
-    }
-  },1200);
+  setTimeout(()=>{ if(!document.hidden){ window.open(u,'_blank'); } },1200);
 }
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),3800)}
 
@@ -396,7 +520,16 @@ plus.onclick=()=>{menu.classList.add('show');plus.classList.add('open')};
 function closeMenu(){menu.classList.remove('show');plus.classList.remove('open')}
 menu.onclick=e=>{if(e.target===menu)closeMenu()};
 menu.querySelectorAll('.mi').forEach(b=>b.onclick=()=>{const a=b.dataset.a;closeMenu();if(a==='up')$('file').click();else mk(a==='fol')});
-$('file').onchange=function(){const f=this.files[0];this.value='';if(f)doUpload(f)};
+
+// Multiple uploads ka logic
+$('file').onchange=async function(){
+    const files = Array.from(this.files);
+    this.value='';
+    if(!files.length) return;
+    for (let i = 0; i < files.length; i++) {
+        await doUpload(files[i], i + 1, files.length);
+    }
+};
 
 async function getCode(){
   if(!cfg.needCode)return '';
@@ -421,32 +554,38 @@ async function mk(isF){
   finally{plus.classList.remove('spin')}
 }
 
-async function doUpload(f){
+async function doUpload(f, currentNum = 1, totalNum = 1){
   if(busy)return;
-  if(!/^image\/(jpeg|png|webp|gif)$/.test(f.type)){toast('Please choose a JPG, PNG, WebP or GIF picture.');return}
-  if(f.size>8*1024*1024){toast('That picture is over 8 MB. Choose a smaller one.');return}
+  if(!/^(image|video)\//.test(f.type)){toast('Please choose a valid image or video.');return}
+  if(f.size>500*1024*1024){toast('File is over 500 MB. Choose a smaller one.');return}
   const code=await getCode();if(code===null)return;
   busy=true;add.disabled=true;
   const send=$('send'),stage=$('stage'),fill=document.querySelector('.prog .f'),obj=URL.createObjectURL(f);
   const setP=p=>{fill.style.strokeDashoffset=440*(1-p)};
   $('av').style.backgroundImage='url("'+obj+'")';
   stage.className='stage upl';setP(0);
-  $('status').textContent='Uploading… 0%';
+  
+  const fileProgress = totalNum > 1 ? ` (${currentNum}/${totalNum})` : '';
+  $('status').textContent='Uploading… 0%' + fileProgress;
   $('sub').textContent='To '+(cat?nice(cat):'Main')+(fol?' › '+nice(fol):'');
   send.classList.add('show');
+  
+  const fileExt = f.name.split('.').pop() || 'jpg'; // Actual extension
+  
   const res=await new Promise(ok=>{
     const x=new XMLHttpRequest();
-    x.open('POST',GW+'/upload?category='+enc(cat)+'&folder='+enc(fol));
+    x.open('POST',GW+'/upload?category='+enc(cat)+'&folder='+enc(fol)+'&ext='+enc(fileExt));
     x.setRequestHeader('Content-Type','application/octet-stream');x.setRequestHeader('x-code',code);
-    x.upload.onprogress=e=>{if(e.lengthComputable){const p=e.loaded/e.total;setP(p*.9);$('status').textContent='Uploading… '+Math.round(p*100)+'%'}};
-    x.upload.onload=()=>{setP(.95);$('status').textContent='Saving…'};
+    x.upload.onprogress=e=>{if(e.lengthComputable){const p=e.loaded/e.total;setP(p*.9);$('status').textContent='Uploading… '+Math.round(p*100)+'%' + fileProgress;}};
+    x.upload.onload=()=>{setP(.95);$('status').textContent='Saving…' + fileProgress};
     x.onload=()=>{let j={};try{j=JSON.parse(x.responseText)}catch(e){}ok({s:x.status,j})};
     x.onerror=()=>ok({s:0,j:{}});
     x.send(f);
   });
+  
   const good=res.s>=200&&res.s<300&&res.j.ok;
   if(good){
-    setP(1);stage.classList.add('done');$('status').textContent='Added';$('sub').textContent='Saved to your gallery';
+    setP(1);stage.classList.add('done');$('status').textContent='Added' + fileProgress;$('sub').textContent='Saved to your gallery';
     if(navigator.vibrate)navigator.vibrate([18,40,18]);
     await wait(1300);
   }
@@ -454,8 +593,11 @@ async function doUpload(f){
   fill.style.strokeDashoffset='';URL.revokeObjectURL(obj);
   if(res.s===401)badCode();
   else if(!good)toast(res.s?'Upload failed. '+(res.j.error||'Try again.'):'Upload failed. Check your connection.');
-  else{await wait(900);await load();toast('Picture added');
-    if(rail.lastElementChild)rail.lastElementChild.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})}
+  else{
+    await wait(900);await load();
+    toast('Uploaded ' + currentNum + '/' + totalNum);
+    if(rail.lastElementChild)rail.lastElementChild.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'})
+  }
   busy=false;add.disabled=!items.length;
 }
 
@@ -494,9 +636,9 @@ function tryUnlock(){
     passErr.classList.remove('show');
     setTimeout(()=>{
       lock.classList.add('hide');
-      try{sessionStorage.setItem('unlocked','1')}catch(e){}
+      try{ localStorage.setItem('gcode','@SyedZul'); }catch(e){}
       load(true);
-    }, 800); // Celebrate for 0.8s before opening gallery
+    }, 800);
   }else{
     passErr.classList.add('show');
     passIn.classList.remove('shake'); void passIn.offsetWidth; passIn.classList.add('shake');
@@ -506,14 +648,110 @@ function tryUnlock(){
 passBtn.onclick=tryUnlock;
 passIn.onkeydown=e=>{if(e.key==='Enter')tryUnlock()};
 
-// Check if unlocked
-let unlocked=false;
-try{unlocked=sessionStorage.getItem('unlocked')==='1'}catch(e){}
-if(unlocked){
-  lock.classList.add('hide');
-  load(true);
+// --- SELECTION & ACTION FUNCTIONS ---
+function cancelSelection() {
+    isSelectMode = false;
+    selectedPaths.clear();
+    document.getElementById('action-bar').classList.remove('show');
+    document.querySelectorAll('.card.selected').forEach(c => c.classList.remove('selected'));
+}
+
+async function deleteSinglePath(p) {
+    const code = localStorage.getItem('gcode') || '@SyedZul';
+    try {
+        const r = await fetch(GW+'/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'x-code': code},
+            body: JSON.stringify({ paths: [p] })
+        });
+        if(r.ok) { 
+            toast('Deleted successfully'); 
+            if(cat === p) { cat = 'Main'; fol = ''; }
+            else if(cat + '/' + fol === p) { fol = ''; }
+            load(true); 
+        }
+        else toast('Delete failed');
+    } catch(e) { toast('Network error'); }
+}
+
+async function deleteSelected() {
+    if(selectedPaths.size === 0) return;
+    showConfirm('Delete Items', "Are you sure you want to delete " + selectedPaths.size + " item(s)?", async () => {
+        const code = localStorage.getItem('gcode') || '@SyedZul';
+        try {
+            const r = await fetch(GW+'/delete', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'x-code': code},
+                body: JSON.stringify({ paths: Array.from(selectedPaths) })
+            });
+            if(r.ok) { toast('Deleted successfully'); cancelSelection(); load(true); }
+            else toast('Delete failed');
+        } catch(e) { toast('Network error'); }
+    });
+}
+
+function shareSelected() {
+    if(selectedPaths.size === 0) return;
+    document.getElementById('sharePassIn').value = '';
+    document.getElementById('sharePop').classList.add('show');
+}
+
+document.getElementById('shareBtn').onclick = async () => {
+    const pass = document.getElementById('sharePassIn').value.trim();
+    const code = localStorage.getItem('gcode') || '@SyedZul';
+    document.getElementById('shareBtn').textContent = 'Generating...';
+    try {
+        const r = await fetch(GW+'/share', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'x-code': code},
+            body: JSON.stringify({ paths: Array.from(selectedPaths), password: pass })
+        });
+        const j = await r.json();
+        if(j.ok) {
+            const shareLink = window.location.origin + window.location.pathname + '?share=' + j.id;
+            navigator.clipboard.writeText(shareLink).then(()=>{ toast('Link Copied!'); }).catch(()=>{ prompt('Copy this link:', shareLink); });
+            document.getElementById('sharePop').classList.remove('show');
+            cancelSelection();
+        } else toast('Failed to create link');
+    } catch(e) { toast('Network error'); }
+    document.getElementById('shareBtn').textContent = 'Generate Link';
+};
+
+// Check if user is opening a Share Link or normal link
+const urlParams = new URLSearchParams(window.location.search);
+const shareId = urlParams.get('share');
+
+if(shareId) {
+    document.getElementById('lock').classList.add('hide');
+    const pass = prompt("This link is password protected. Enter password (or leave empty if none):");
+    fetch(GW+'/share/'+shareId+'?password='+encodeURIComponent(pass||''))
+    .then(r=>r.json())
+    .then(d=>{
+        if(!d.ok) { alert(d.error || 'Invalid Link'); return; }
+        document.querySelector('header').style.display = 'none';
+        document.querySelector('footer').style.display = 'none';
+        
+        let sharedItems = [];
+        d.files.forEach(f => {
+            sharedItems.push({ 
+                name: f.split('/').pop(), 
+                url: RAW + f.split('/').map(enc).join('/'), 
+                fallback: RAW + f.split('/').map(enc).join('/'), 
+                path: f 
+            });
+        });
+        items = sharedItems;
+        render();
+    }).catch(()=>alert("Connection error. Please try again."));
 } else {
-  setTimeout(()=>passIn.focus(), 400);
+    let unlocked=false;
+    try{unlocked=localStorage.getItem('gcode')==='@SyedZul'}catch(e){}
+    if(unlocked){
+      lock.classList.add('hide');
+      load(true);
+    } else {
+      setTimeout(()=>passIn.focus(), 400);
+    }
 }
 </script>
 </body>
