@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffe9f2">
+<title>Happy Birthday Aqsa</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@1,9..144,700;1,9..144,900&family=Nunito:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--deep:#e0457b;--pink:#ff8fb8;--soft:#ffc2d9;--bg2:#ffe4ef;--ink:#5a2340}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Nunito',system-ui,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fff,var(--bg2) 50%,#fff);background-attachment:fixed;min-height:100vh;overflow-x:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+body.lock{overflow:hidden;height:100vh}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:80}
+.petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
+.petals i{position:absolute;top:-40px;font-style:normal;animation:fall linear infinite;opacity:.7}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(540deg)}}
+.trail{position:fixed;pointer-events:none;z-index:90;font-size:18px;animation:tr .9s ease-out forwards}
+@keyframes tr{to{opacity:0;transform:translateY(-40px) scale(.3) rotate(60deg)}}
+
+/* splash */
+#splash{position:fixed;inset:0;z-index:70;background:radial-gradient(circle at 50% 40%,#fff,#ffd0e2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;transition:opacity 1s,transform 1s,filter 1s}
+#splash.out{opacity:0;transform:scale(1.3);filter:blur(12px);pointer-events:none}
+.star{position:absolute;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 12px 4px #ff8fb8aa;animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(2.2);opacity:.3}}
+.hint{font-family:'Fraunces',serif;font-style:italic;font-size:24px;color:var(--deep);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.08);opacity:.7}}
+.gift{position:relative;width:170px;height:170px;cursor:pointer;animation:wig 2.2s ease-in-out infinite}
+.gift.open{animation:none}
+@keyframes wig{0%,60%,100%{transform:rotate(0)}65%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}85%{transform:rotate(-4deg)}}
+.box{position:absolute;bottom:0;left:10px;right:10px;height:110px;background:linear-gradient(180deg,#ff9ec2,#f0679a);border-radius:8px 8px 16px 16px;box-shadow:0 16px 30px rgba(224,69,123,.4)}
+.box::before,.lid::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:26px;margin-left:-13px;background:#fff}
+.lid{position:absolute;top:22px;left:0;right:0;height:46px;background:linear-gradient(180deg,#ffb3cf,#f77fab);border-radius:12px;transition:transform .9s cubic-bezier(.3,1.6,.5,1),opacity .9s;z-index:2}
+.bow{position:absolute;top:-26px;left:50%;width:60px;height:34px;margin-left:-30px}
+.bow::before,.bow::after{content:"";position:absolute;top:0;width:28px;height:28px;border:7px solid #fff;border-radius:50% 50% 50% 0}
+.bow::before{left:0;transform:rotate(-20deg)}.bow::after{right:0;transform:scaleX(-1) rotate(-20deg)}
+.gift.open .lid{transform:translate(40px,-200px) rotate(35deg);opacity:0}
+.glow{position:absolute;left:50%;top:40px;width:20px;height:20px;margin:-10px;border-radius:50%;background:#fff;opacity:0;z-index:1}
+.gift.open .glow{animation:fl 1.1s ease-out forwards}
+@keyframes fl{0%{opacity:1;box-shadow:0 0 0 0 #ffd0e2}100%{opacity:0;box-shadow:0 0 0 300px #ffd0e2}}
+.hearts i{position:absolute;left:50%;top:40px;font-style:normal;font-size:22px;opacity:0;animation:fly 1.7s ease-out forwards}
+@keyframes fly{0%{opacity:1;transform:translate(0,0) scale(.5)}100%{opacity:0;transform:translate(var(--x),var(--y)) scale(1.4)}}
+
+/* text split */
+.w{display:inline-block;white-space:nowrap}
+.split .ch{display:inline-block;opacity:0;transform:translateY(70px) rotate(14deg) scale(.4);filter:blur(8px)}
+.split.in .ch{animation:letter .8s cubic-bezier(.2,1.6,.4,1) forwards;animation-delay:calc(var(--i)*.06s)}
+@keyframes letter{to{opacity:1;transform:none;filter:none}}
+.grad .ch{background:linear-gradient(90deg,#e0457b,#ff8fb8,#c2185b);background-size:300% 100%;background-position:calc(var(--i)*9%) 0;-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* hero */
+.hero{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;position:relative;overflow:hidden;z-index:2}
+.blob{position:absolute;border-radius:50%;filter:blur(50px);opacity:.55;animation:blob 9s ease-in-out infinite alternate}
+.blob:nth-child(1){width:260px;height:260px;background:#ffb3cf;top:-60px;left:-70px}
+.blob:nth-child(2){width:300px;height:300px;background:#ffd9e8;bottom:-80px;right:-90px;animation-delay:-3s}
+.blob:nth-child(3){width:180px;height:180px;background:#ff8fb8;top:40%;right:-60px;animation-delay:-6s}
+@keyframes blob{to{transform:translate(40px,-30px) scale(1.25)}}
+.balloons{position:absolute;inset:0;pointer-events:none}
+.b{position:absolute;bottom:-120px;width:50px;height:64px;border-radius:50% 50% 48% 48%;opacity:.8;animation:rise linear infinite}
+.b::after{content:"";position:absolute;left:50%;top:100%;width:2px;height:56px;background:#e0457b55}
+@keyframes rise{to{transform:translateY(-120vh) rotate(8deg)}}
+.cake{font-size:84px;opacity:0;transform:scale(0)}
+.go .cake{animation:cake 1s .1s cubic-bezier(.2,1.8,.4,1) forwards,bob 2.4s 1.2s ease-in-out infinite}
+@keyframes cake{to{opacity:1;transform:scale(1)}}
+@keyframes bob{50%{transform:translateY(-12px) rotate(-4deg)}}
+h1{font-family:'Fraunces',serif;font-style:italic;font-weight:900;font-size:clamp(40px,12.5vw,92px);line-height:1.05;margin:10px 0 2px}
+.name{font-family:'Fraunces',serif;font-style:italic;font-weight:900;font-size:clamp(54px,18vw,120px);line-height:1;margin-bottom:16px}
+.age{display:inline-block;padding:11px 22px;border-radius:999px;background:#fff;border:2px solid var(--soft);font-weight:700;box-shadow:0 10px 26px rgba(224,69,123,.18);opacity:0;transform:translateY(30px) scale(.8)}
+.go .age{animation:up .8s 1.6s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes up{to{opacity:1;transform:none}}
+.years{margin-top:12px;font-size:18px;opacity:0}
+.go .years{animation:up .8s 1.9s forwards}
+.type{margin-top:16px;min-height:56px;max-width:32ch;font-size:19px;line-height:1.5;font-weight:700;color:var(--deep)}
+.caret{display:inline-block;width:2px;height:1.1em;background:var(--deep);margin-left:3px;vertical-align:-3px;animation:bl .7s steps(1) infinite}
+@keyframes bl{50%{opacity:0}}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:18px;opacity:0}
+.go .row{animation:up .8s 2.3s forwards}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 26px;border:0;border-radius:999px;font:700 16px 'Nunito',sans-serif;color:#fff;background:linear-gradient(135deg,#ff8fb8,#e0457b);cursor:pointer;box-shadow:0 10px 24px rgba(224,69,123,.35);transition:transform .15s;position:relative;overflow:hidden}
+.btn.alt{background:#fff;color:var(--deep);border:2px solid var(--soft);box-shadow:none}
+.btn:active{transform:scale(.94)}
+.btn::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:#fff6;transform:skewX(-20deg);animation:sw 3s infinite}
+@keyframes sw{60%,100%{left:140%}}
+.scroll{position:absolute;bottom:18px;font-size:26px;animation:bob 1.6s infinite;opacity:.7}
+
+/* sections */
+section{padding:56px 16px 70px;max-width:1100px;margin:auto;position:relative;z-index:2}
+h2{font-family:'Fraunces',serif;font-style:italic;font-size:clamp(32px,9vw,50px);text-align:center;margin-bottom:30px}
+.wave{display:block;width:100%;height:50px;margin-top:-1px}
+.wishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.wish{background:#fff;border:2px solid var(--soft);border-radius:32px;padding:28px 22px;text-align:center;box-shadow:0 12px 30px rgba(224,69,123,.14)}
+.wish b{display:block;font-size:46px;margin-bottom:8px;animation:bob 3s ease-in-out infinite}
+.wish h3{font-family:'Fraunces',serif;font-style:italic;color:var(--deep);font-size:24px;margin-bottom:6px}
+.rv{opacity:0;transition:opacity .9s cubic-bezier(.2,.8,.2,1),transform .9s cubic-bezier(.2,1.2,.3,1);transition-delay:var(--d,0s)}
+.rv.l{transform:translateX(-80px) rotate(-6deg)}.rv.r{transform:translateX(80px) rotate(6deg)}
+.rv.z{transform:scale(.6)}.rv.u{transform:translateY(80px) rotate(3deg)}
+.rv.in{opacity:1;transform:none}
+
+.dua{position:relative;background:linear-gradient(160deg,#fff,#fff0f6);border:2px solid var(--soft);border-radius:40px;padding:36px 24px;text-align:center;box-shadow:0 18px 44px rgba(224,69,123,.2);overflow:hidden}
+.dua::before{content:"🤲";display:block;font-size:54px;margin-bottom:10px;animation:bob 3s ease-in-out infinite}
+.dua h2{margin-bottom:18px}
+.dua p{font-size:18px;line-height:1.8;max-width:40ch;margin:0 auto 14px}
+.dua em{font-style:normal;font-weight:700;color:var(--deep)}
+.dua .ar{font-family:'Fraunces',serif;font-style:italic;font-size:19px;color:var(--deep);background:#fff;border:2px dashed var(--soft);border-radius:22px;padding:14px 16px}
+.dua .am{font-family:'Fraunces',serif;font-style:italic;font-size:24px;color:var(--deep);margin-top:20px}
+/* gallery */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:22px;perspective:1000px}
+.card{background:#fff;border:2px solid var(--soft);border-radius:34px;padding:10px;box-shadow:0 14px 34px rgba(224,69,123,.18);transform-style:preserve-3d;position:relative}
+.card.in{transition:transform .25s,box-shadow .3s}
+.ph{position:relative;border-radius:26px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(110deg,#ffe4ef 30%,#fff 50%,#ffe4ef 70%);background-size:200% 100%;animation:sk 1.4s linear infinite}
+@keyframes sk{to{background-position:-200% 0}}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;opacity:0;transform:scale(1.25);filter:blur(18px);transition:opacity 1s,transform 1.4s cubic-bezier(.2,.8,.2,1),filter 1.2s}
+.ph img.ok{opacity:1;transform:scale(1);filter:none}
+.card:hover .ph img.ok{transform:scale(1.07)}
+.ph::after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(90deg,transparent,#fff9,transparent);transform:skewX(-20deg);pointer-events:none}
+.card:hover .ph::after{left:140%;transition:left .9s}
+.num{position:absolute;top:14px;left:14px;padding:6px 12px;border-radius:999px;background:#fffd;font-weight:700;font-size:13px;color:var(--deep);z-index:2}
+.dl{display:flex;justify-content:center;align-items:center;gap:8px;width:100%;margin-top:10px;padding:14px;border:0;border-radius:22px;font:700 15px 'Nunito',sans-serif;color:#fff;background:linear-gradient(135deg,#ff8fb8,#e0457b);cursor:pointer;transition:transform .15s}
+.dl:active{transform:scale(.96)}
+.msg{text-align:center;padding:30px 0}
+.spin{width:38px;height:38px;margin:20px auto;border:4px solid var(--soft);border-top-color:var(--deep);border-radius:50%;animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+/* lightbox */
+#lb{position:fixed;inset:0;z-index:85;background:rgba(90,35,64,.88);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .4s}
+#lb.on{opacity:1;pointer-events:auto}
+#lb img{max-width:100%;max-height:84vh;border-radius:28px;transform:scale(.8);transition:transform .5s cubic-bezier(.2,1.4,.4,1);border:4px solid #fff}
+#lb.on img{transform:scale(1)}
+.nav{position:absolute;top:50%;width:46px;height:46px;margin-top:-23px;border-radius:50%;border:0;background:#fff;font-size:22px;color:var(--deep);cursor:pointer}
+.nav.p{left:10px}.nav.n{right:10px}
+.cnt{position:absolute;bottom:18px;color:#fff;font-weight:700}
+footer{text-align:center;padding:30px 16px 50px;position:relative;z-index:2;font-family:'Fraunces',serif;font-style:italic;font-size:24px;color:var(--deep)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.split .ch,.rv,.cake,.age,.years,.row{opacity:1!important;transform:none!important;filter:none!important}}
+</style>
+</head>
+<body class="lock">
+<canvas id="confetti"></canvas>
+<div class="petals" id="petals"></div>
+
+<div id="splash">
+  <div id="stars"></div>
+  <div class="gift" id="gift"><div class="glow"></div><div class="box"></div><div class="lid"><div class="bow"></div></div><div class="hearts" id="hearts"></div></div>
+  <div class="hint" id="hint">Gift kholne ke liye tap karein 🎁</div>
+</div>
+
+<header class="hero" id="hero">
+  <div class="blob"></div><div class="blob"></div><div class="blob"></div>
+  <div class="balloons" id="balloons"></div>
+  <div class="cake">🎂</div>
+  <h1 class="split grad" data-t="Happy Birthday"></h1>
+  <div class="name split grad" data-t="Aqsa"></div>
+  <div class="age">24 saal mukammal · 25wan saal mubarak 🎉</div>
+  <p class="years">2001 🎀 → 2026 🎂</p>
+  <p class="type"><span id="tw"></span><i class="caret"></i></p>
+  <div class="row"><button class="btn" id="party">🎉 Celebrate</button></div>
+  <div class="scroll">⌄</div>
+</header>
+
+<section>
+  <h2 class="split grad" data-t="Meri Dua'en"></h2>
+  <div class="wishes">
+    <div class="wish rv l"><b>🌸</b><h3>Khushiyan</h3><p>Har din aap ke chehre par muskurahat rahe.</p></div>
+    <div class="wish rv u" style="--d:.15s"><b>🌷</b><h3>Sehat</h3><p>Allah aap ko hamesha tandrust aur khush rakhe.</p></div>
+    <div class="wish rv r" style="--d:.3s"><b>✨</b><h3>Kamyabi</h3><p>Aap ke har khwab ko manzil mile, ameen.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="dua rv z">
+    <h2 class="split grad" data-t="Api ke liye Dua"></h2>
+    <p class="rv u">Ya Allah! Meri pyari Api <em>Aqsa</em> ko lambi, sehatmand aur barkat wali zindagi ata farma. Unhein hamesha apni hifazat mein rakh.</p>
+    <p class="rv u" style="--d:.15s">Unke shohar <em>Ibrar</em> ke saath unka rishta mohabbat, sukoon aur ek doosre ki samajh se bharpoor rakh.</p>
+    <p class="rv u" style="--d:.3s">Unke bete <em>Abdul Hadi</em> ko nek, ilm wala aur waalidain ki aankhon ki thandak bana. Use hamesha seedhe raaste par chalne ki taufeeq de.</p>
+    <p class="rv u" style="--d:.45s">Is ghar ko khushiyon, rizq mein barkat aur imaan ki roshni se bhar de. Har pareshani aur nazar-e-bad se door rakh.</p>
+    <p class="ar rv z" style="--d:.6s">Rabbana hab lana min azwajina wa dhurriyyatina qurrata a'yunin waj'alna lil muttaqina imama</p>
+    <div class="am rv u" style="--d:.75s">Ameen Ya Rabbal Aalameen 🤍</div>
+  </div>
+</section>
+
+<section id="gallery">
+  <h2 class="split grad" data-t="Yaadon ki Gallery"></h2>
+  <div class="grid" id="grid"><div class="spin"></div></div>
+</section>
+
+<footer class="rv z">Made with 💖 for Aqsa</footer>
+
+<div id="lb"><button class="nav p">‹</button><img alt=""><button class="nav n">›</button><div class="cnt" id="cnt"></div></div>
+
+<script>
+const OWNER="itsmems97",REPO="Personal-Data",BRANCH="main";
+const EXT=/\.(jpe?g|png|gif|webp|avif)$/i;
+const RAW=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}/`;
+const cols=["#ff8fb8","#ffc2d9","#e0457b","#ffffff","#ffb3cf"];
+const $=id=>document.getElementById(id);
+
+/* ---- sound ---- */
+let ac,master,muted=false,playing=false;
+function initAudio(){if(ac)return;ac=new (window.AudioContext||window.webkitAudioContext)();master=ac.createGain();master.gain.value=.5;master.connect(ac.destination)}
+function tone(f,t,d,type="triangle",v=.28){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05)}
+function pop(){const n=ac.createBuffer(1,ac.sampleRate*.25,ac.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/d.length,3);const s=ac.createBufferSource(),g=ac.createGain();g.gain.value=.6;s.buffer=n;s.connect(g);g.connect(master);s.start()}
+function sparkle(){const t=ac.currentTime;[784,988,1175,1568].forEach((f,i)=>tone(f,t+i*.08,.5,"sine",.2))}
+const N={C:261.63,D:293.66,E:329.63,F:349.23,G:392,A:440,B:466.16,H:523.25};
+const song=[["C",.75],["C",.25],["D",1],["C",1],["F",1],["E",2],["C",.75],["C",.25],["D",1],["C",1],["G",1],["F",2],["C",.75],["C",.25],["H",1],["A",1],["F",1],["E",1],["D",1],["B",.75],["B",.25],["A",1],["F",1],["G",1],["F",2]];
+function melody(){if(!ac||playing)return;playing=true;let t=ac.currentTime+.2;song.forEach(([n,b])=>{tone(N[n],t,b*.46,"triangle",.28);tone(N[n]/2,t,b*.46,"sine",.12);t+=b*.42});setTimeout(()=>playing=false,(t-ac.currentTime)*1000)}
+
+/* ---- confetti ---- */
+const cv=$("confetti"),cx=cv.getContext("2d");let P=[];
+function size(){cv.width=innerWidth;cv.height=innerHeight}addEventListener("resize",size);size();
+function burst(n=140,x=innerWidth/2,y=innerHeight*.45){for(let i=0;i<n;i++)P.push({x,y,vx:(Math.random()-.5)*18,vy:Math.random()*-15-3,s:Math.random()*8+4,c:cols[i%cols.length],r:Math.random()*6,vr:(Math.random()-.5)*.4,l:140+Math.random()*60,h:Math.random()<.3})}
+(function loop(){cx.clearRect(0,0,cv.width,cv.height);P=P.filter(p=>p.l>0);
+for(const p of P){p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.vx*=.99;p.r+=p.vr;p.l--;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.globalAlpha=Math.min(1,p.l/40);cx.fillStyle=p.c;if(p.h){cx.font=p.s*2+"px serif";cx.fillText("♥",0,0)}else cx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6);cx.restore()}
+requestAnimationFrame(loop)})();
+
+/* ---- decor ---- */
+for(let i=0;i<22;i++){const s=document.createElement("div");s.className="star";s.style.left=Math.random()*100+"%";s.style.top=Math.random()*100+"%";s.style.animationDelay=Math.random()*2+"s";$("stars").appendChild(s)}
+for(let i=0;i<12;i++){const b=document.createElement("div");b.className="b";b.style.left=Math.random()*95+"%";b.style.background=cols[i%3];b.style.animationDuration=(9+Math.random()*9)+"s";b.style.animationDelay=(-Math.random()*12)+"s";$("balloons").appendChild(b)}
+for(let i=0;i<16;i++){const p=document.createElement("i");p.textContent=["🌸","💮","🎀","💗"][i%4];p.style.left=Math.random()*100+"%";p.style.fontSize=(14+Math.random()*14)+"px";p.style.animationDuration=(9+Math.random()*10)+"s";p.style.animationDelay=(-Math.random()*14)+"s";p.style.setProperty("--dx",(Math.random()*160-80)+"px");$("petals").appendChild(p)}
+let lastT=0;addEventListener("pointermove",e=>{const n=performance.now();if(n-lastT<70)return;lastT=n;const t=document.createElement("div");t.className="trail";t.textContent=["✨","💖","🌸"][Math.random()*3|0];t.style.left=e.clientX+"px";t.style.top=e.clientY+"px";document.body.appendChild(t);setTimeout(()=>t.remove(),900)});
+
+/* ---- text effects ---- */
+function split(el){const t=el.dataset.t;el.textContent="";let k=0;t.split(" ").forEach(w=>{const W=document.createElement("span");W.className="w";[...w].forEach(c=>{const s=document.createElement("span");s.className="ch";s.textContent=c;s.style.setProperty("--i",k++);W.appendChild(s)});el.append(W," ")})}
+document.querySelectorAll(".split").forEach(split);
+const wishes=["Allah aap ko hamesha khush rakhe 🤲","Aap ka har din roshan ho ☀️","Dher saari muskurahatein aap ke naam 😊","Happy 25th year, Aqsa! 💖"];
+let wi=0,ci=0,del=false;
+function typer(){const s=wishes[wi],el=$("tw");el.textContent=s.slice(0,ci);
+if(!del&&ci++===s.length){del=true;return setTimeout(typer,1800)}
+if(del&&--ci<0){del=false;ci=0;wi=(wi+1)%wishes.length}
+setTimeout(typer,del?25:70)}
+
+/* ---- reveal on scroll ---- */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.15});
+const watch=el=>io.observe(el);
+document.querySelectorAll("section .split,.rv").forEach(watch);
+
+/* ---- gift ---- */
+const gift=$("gift");let opened=false;
+gift.onclick=()=>{if(opened)return;opened=true;initAudio();if(ac.state==="suspended")ac.resume();
+$("hint").style.visibility="hidden";gift.classList.add("open");pop();setTimeout(sparkle,150);
+for(let i=0;i<16;i++){const e=document.createElement("i");e.textContent=["💖","🎀","✨","💗"][i%4];e.style.setProperty("--x",(Math.random()*320-160)+"px");e.style.setProperty("--y",(-Math.random()*240-40)+"px");e.style.animationDelay=Math.random()*.4+"s";$("hearts").appendChild(e)}
+setTimeout(()=>burst(170),300);
+setTimeout(()=>{$("splash").classList.add("out");document.body.classList.remove("lock");$("hero").classList.add("go");
+document.querySelectorAll(".hero .split").forEach((e,i)=>setTimeout(()=>e.classList.add("in"),i*900));
+melody();setTimeout(typer,3200)},1800)};
+$("party").onclick=()=>{initAudio();pop();burst(200);melody();$("gallery").scrollIntoView({behavior:"smooth"})};
+
+/* ---- gallery ---- */
+const probe=u=>new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=u});
+async function listImages(){
+  try{const r=await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/?ref=${BRANCH}`);if(!r.ok)throw 0;
+  return (await r.json()).filter(f=>f.type==="file"&&EXT.test(f.name)).map(f=>({name:f.name,url:f.download_url||RAW+encodeURIComponent(f.name)})).sort((a,b)=>a.name.localeCompare(b.name,undefined,{numeric:true}))}
+  catch(e){const out=[];for(let i=1;i<=60;i++){let u=null;for(const x of["jpg","jpeg","png","webp"]){if(await probe(`${RAW}${i}.${x}`)){u=`${RAW}${i}.${x}`;break}}if(!u)break;out.push({name:u.split("/").pop(),url:u})}return out}
+}
+async function download(url,name,btn){const old=btn.textContent;btn.textContent="Downloading…";
+try{const b=await(await fetch(url)).blob();const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);btn.textContent="✓ Saved"}
+catch(e){window.open(url,"_blank")}
+setTimeout(()=>btn.textContent=old,1500)}
+let IM=[],cur=0;
+function show(i){cur=(i+IM.length)%IM.length;$("lb").querySelector("img").src=IM[cur].url;$("cnt").textContent=`${cur+1} / ${IM.length}`}
+(async()=>{
+  const grid=$("grid");IM=await listImages();grid.innerHTML="";
+  if(!IM.length){grid.innerHTML='<p class="msg">Abhi koi image nahi mili. Repo mein photos upload karein.</p>';return}
+  const V=["l","u","r","z"];
+  IM.forEach((f,i)=>{
+    const c=document.createElement("div");c.className="card rv "+V[i%4];c.style.setProperty("--d",(i%3)*.12+"s");
+    const ph=document.createElement("div");ph.className="ph";
+    const im=new Image();im.alt="Photo "+(i+1);im.loading="lazy";im.onload=()=>{im.classList.add("ok");ph.style.animation="none"};im.src=f.url;
+    im.onclick=()=>{show(i);$("lb").classList.add("on");burst(50)};
+    const n=document.createElement("span");n.className="num";n.textContent="♡ "+(i+1);
+    ph.append(im,n);
+    const b=document.createElement("button");b.className="dl";b.textContent="⬇ Download Image";b.onclick=()=>download(f.url,f.name,b);
+    c.append(ph,b);grid.appendChild(c);watch(c);
+    c.addEventListener("pointermove",e=>{if(e.pointerType!=="mouse"||!c.classList.contains("in"))return;const r=c.getBoundingClientRect();c.style.transform=`rotateY(${((e.clientX-r.left)/r.width-.5)*14}deg) rotateX(${-((e.clientY-r.top)/r.height-.5)*14}deg) scale(1.03)`});
+    c.addEventListener("pointerleave",()=>c.style.transform="");
+  });
+})();
+const lb=$("lb");
+lb.onclick=e=>{if(e.target===lb)lb.classList.remove("on")};
+lb.querySelector(".p").onclick=e=>{e.stopPropagation();show(cur-1)};
+lb.querySelector(".n").onclick=e=>{e.stopPropagation();show(cur+1)};
+let sx=0;lb.addEventListener("touchstart",e=>sx=e.touches[0].clientX);
+lb.addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)show(cur+(d<0?1:-1))});
+addEventListener("keydown",e=>{if(!lb.classList.contains("on"))return;if(e.key==="Escape")lb.classList.remove("on");if(e.key==="ArrowRight")show(cur+1);if(e.key==="ArrowLeft")show(cur-1)});
+</script>
+</body>
+</html>
